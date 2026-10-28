@@ -15,10 +15,10 @@ public class PasswordAnalyzer
         
     }
 
-    public int calculateScore(String password)
+    public static int calculateScore(String password)
     {
         int score = 0;
-
+        //length related point system below
         if(password.length() >= Min_length )
         {
             score += 2;
@@ -28,13 +28,76 @@ public class PasswordAnalyzer
         {
             score += 2;
         }
+        
+        //now we are off to check whether the password has upper case letter, lower case letter, numbers and symbols
+        boolean hasUpper = false;
+        boolean hasLower = false;
+        boolean hasNumber = false;
+        boolean hasSymbol = false;
 
+        for (int i = 0; i< password.length(); i ++)
+        {
+            char ch = password.charAt(i);
 
+            if(Character.isUpperCase(ch))
+            {
+                hasUpper = true;
+            }
+
+            else if(Character.isLowerCase(ch))
+            {
+                hasLower = true;
+            }
+
+            else if(Character.isDigit(ch))
+            {
+                hasNumber = true;
+            }
+
+            else
+            {
+                hasSymbol = true;
+            }
+        }
+
+        if(hasUpper)
+        {
+            score += 2;
+        }
+
+        if(hasLower)
+        {
+            score += 2;
+        }
+
+        if(hasNumber)
+        {
+            score += 2;
+        }
+
+        if(hasSymbol)
+        {
+            score += 2;
+        }
+
+        //we will deduct points for characters that are repeated directly one after another
+        int repeatedChars = 0;
+
+        for (int i = 0; i < password.length(); i++)
+        {
+            if(password.charAt(i) == password.charAt(i + 1))
+            {
+                repeatedChars ++;
+                //i'm not using a break since i want the point deduction to happen everyt ime the program finds a repeated character
+            }
+        }
+
+        score -= repeatedChars;
 
         return score;
     }
 
-    public String classifyStrength(int score)
+    public static String classifyStrength(int score)
     {
         if (score <= 4)
         {
