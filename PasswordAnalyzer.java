@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.List;
 
 public class PasswordAnalyzer
 {
@@ -10,9 +12,17 @@ public class PasswordAnalyzer
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Enter the password that you want me to analyse and give you feedback for: ");
-        String password = scan.nextLine();
-
         
+        String password = scan.nextLine();
+        int score = calculateScore(password);
+        String strength = classifyStrength(score);
+        
+        System.out.println("~~~~~~~RESULTS~~~~~~~");
+        System.out.println("Password score: " + score);
+        System.out.println("Password Strength: " + strength);
+        System.out.println();
+
+        scan.close();        
     }
 
     public static int calculateScore(String password)
@@ -88,7 +98,7 @@ public class PasswordAnalyzer
             if(password.charAt(i) == password.charAt(i + 1))
             {
                 repeatedChars ++;
-                //i'm not using a break since i want the point deduction to happen everyt ime the program finds a repeated character
+                //i'm not using a break since i want the point deduction to happen everytime the program finds a repeated character
             }
         }
 
@@ -120,5 +130,22 @@ public class PasswordAnalyzer
         }
 
         return "Very strong password";
+    }
+
+    public static List<String> feedbackGeneration(String t)
+    {
+        List<String> feedback = new ArrayList<>();
+
+        if(t.length() < Min_length)
+        {
+            feedback.add("Increase the lentgh of your password to a minimum of 8 characters.");
+        }
+
+        if(t.length() < bonus_length)
+        {
+            feedback.add("Even though your password has a good length it can be better. Try using more than 12 characters next time.");
+        }
+
+        return feedback;
     }
 }
