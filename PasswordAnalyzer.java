@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.List;
+import java.util.Scanner;
 
 public class PasswordAnalyzer
 {
@@ -16,11 +16,19 @@ public class PasswordAnalyzer
         String password = scan.nextLine();
         int score = calculateScore(password);
         String strength = classifyStrength(score);
+
+        List<String> feedback = feedbackGeneration(password);
         
-        System.out.println("~~~~~~~RESULTS~~~~~~~");
+        System.out.println("\n~~~~~~~RESULTS~~~~~~~");
         System.out.println("Password score: " + score);
-        System.out.println("Password Strength: " + strength);
-        System.out.println();
+        System.out.println("Password strength: " + strength);
+        
+        System.out.println("\n~~~~~~~FEEDBACK~~~~~~~");
+
+        for(String msg : feedback)
+        {
+            System.out.println("~" + msg);
+        }
 
         scan.close();        
     }
@@ -40,71 +48,68 @@ public class PasswordAnalyzer
         }
         
         //now we are off to check whether the password has upper case letter, lower case letter, numbers and symbols
-        boolean hasUpper = false;
-        boolean hasLower = false;
-        boolean hasNumber = false;
-        boolean hasSymbol = false;
-
-        for (int i = 0; i< password.length(); i ++)
-        {
-            char ch = password.charAt(i);
-
-            if(Character.isUpperCase(ch))
-            {
-                hasUpper = true;
-            }
-
-            else if(Character.isLowerCase(ch))
-            {
-                hasLower = true;
-            }
-
-            else if(Character.isDigit(ch))
-            {
-                hasNumber = true;
-            }
-
-            else
-            {
-                hasSymbol = true;
-            }
-        }
-
-        if(hasUpper)
+        if(hasUpper(password))
         {
             score += 2;
         }
 
-        if(hasLower)
+        if(hasLower(password))
         {
             score += 2;
         }
 
-        if(hasNumber)
+        if(hasNumber(password))
         {
             score += 2;
         }
 
-        if(hasSymbol)
+        if(hasSymbol(password))
         {
             score += 2;
         }
 
         //we will deduct points for characters that are repeated directly one after another
-        int repeatedChars = 0;
-
-        for (int i = 0; i < password.length(); i++)
+        if(!hasRepeatedChars(password))
         {
-            if(password.charAt(i) == password.charAt(i + 1))
+            score +=2;
+        }
+
+        return score;
+    }
+
+    public static boolean hasUpper(String p)
+    {
+        return p.matches(".*[A-Z].*"); //regex equals to every char before A-Z then every char after
+    }
+
+    
+    public static boolean hasLower(String p)
+    {
+        return p.matches(".*[a-z].*"); //similarly with lowercase letters
+    }
+
+    
+    public static boolean hasNumber(String p)
+    {
+        return p.matches(".*[0-9].*");
+    }
+    
+    public static boolean hasSymbol(String p)
+    {
+        return p.matches(".*[^A-Za-z0-9].*"); //^means anything but the things following so this gives back only for the symbols like !@#$%^*&* etchetera
+    }
+
+    public static boolean hasRepeatedChars(String p)
+    {
+        for(int i = 0; i < p.length() - 1; i++)
+        {
+            if(p.charAt(i) == p.charAt(i + 1))
             {
-                repeatedChars ++;
-                //i'm not using a break since i want the point deduction to happen everytime the program finds a repeated character
+                return true;
             }
         }
 
-        score -= repeatedChars;
-
-        return score;
+        return false;
     }
 
     public static String classifyStrength(int score)
@@ -144,6 +149,36 @@ public class PasswordAnalyzer
         if(t.length() < bonus_length)
         {
             feedback.add("Even though your password has a good length it can be better. Try using more than 12 characters next time.");
+        }
+
+        if(!hasUpper(t))
+        {
+            feedback.add("Add at least an uppercase letter to your password.");
+        }
+
+        if(!hasLower(t))
+        {
+            feedback.add("Add at least an lowercase letter to your password.");
+        }
+
+        if(!hasNumber(t))
+        {
+            feedback.add("Add at least a number to your password.");
+        }
+
+        if(!hasSymbol(t))
+        {
+            feedback.add("Add at least a symbol (!@#$%^&*-) to your password.");
+        }
+
+        if(hasRepeatedChars(t))
+        {
+            feedback.add("Your password has repeated consecutive characters. Please change those up to improve password security.");
+        }
+
+        if(feedback.isEmpty())
+        {
+            feedback.add("Magnificent! Your password follows all the security requirements. I have nothing to correct!");
         }
 
         return feedback;
